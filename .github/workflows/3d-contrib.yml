@@ -1,0 +1,26 @@
+name: Generate 3D Contribution Archive
+
+on:
+  schedule: # Chạy tự động lúc 00:00 UTC mỗi ngày
+    - cron: "0 0 * * *"
+  workflow_dispatch: # Cho phép chạy thủ công bất cứ lúc nào
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: generate-github-profile-3d-contrib
+    steps:
+      - uses: actions/checkout@v3
+      - uses: yoshi38/github-profile-3d-contrib@0.7.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          USERNAME: ${{ github.repository_owner }}
+          # Bạn có thể đổi SETTING_JSON để đổi màu. 
+          # Mặc định action sẽ tạo ra nhiều phiên bản (green, night-view, etc.)
+      - name: Commit & Push changes
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add -A .
+          git commit -m "Generated 3D contribution grid" || exit 0
+          git push
